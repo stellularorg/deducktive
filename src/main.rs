@@ -73,7 +73,9 @@ async fn main() -> std::io::Result<()> {
             http_client: client,
         });
 
-        let cors = actix_cors::Cors::default().send_wildcard();
+        let cors = actix_cors::Cors::default()
+            .allow_any_origin()
+            .send_wildcard();
 
         App::new()
             .app_data(web::Data::clone(&data))

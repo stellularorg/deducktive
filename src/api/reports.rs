@@ -10,6 +10,8 @@ pub struct PCreateReport {
     pub report_type: crate::db::ReportType,
     pub content: String,
     pub address: String,
+    #[serde(default)]
+    pub as_user: String,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -36,9 +38,14 @@ pub async fn create_request(
             report_type: body.report_type.clone(),
             status: crate::db::ReportStatus::Active,
             author: if token_user.is_some() {
-                token_user.unwrap().payload.unwrap().user.username
+                let username = token_user.unwrap().payload.unwrap().user.username;
+
+                match username.is_empty() {
+                    true => body.as_user.clone(), // use the body username
+                    false => username,            // otherwise, use the username from the token
+                }
             } else {
-                String::new()
+                body.as_user.clone()
             },
             content: body.content.clone(),
             address: body.address.clone(),
