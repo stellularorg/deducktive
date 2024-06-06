@@ -58,8 +58,8 @@ h6 {
     --diff: 9%;
 
     /* main colors */
-    --primary: hsl(249, 100%, 85%);
-    --primary-low: hsl(249, 100%, 81%);
+    --primary: hsl(108, 100%, 81%);
+    --primary-low: hsl(108, 100%, 76%);
 
     --secondary: hsl(69, 100%, 80%);
     --secondary-low: hsl(69, 90%, 75%);

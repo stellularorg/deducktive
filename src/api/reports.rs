@@ -32,6 +32,7 @@ pub async fn create_request(
     let res = data
         .db
         .create_report(&mut crate::db::Report {
+            id: String::new(),
             report_type: body.report_type.clone(),
             status: crate::db::ReportStatus::Active,
             author: if token_user.is_some() {

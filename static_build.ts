@@ -10,6 +10,7 @@ if (process.env.DO_NOT_CLEAR_DIST === undefined)
 const output = await build({
     entrypoints: [
         "./static/ts/pages/Footer.ts",
+        "./static/ts/pages/ReportView.ts",
     ],
     minify: {
         identifiers: true,

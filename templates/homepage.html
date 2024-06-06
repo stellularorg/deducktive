@@ -1,9 +1,92 @@
-{% extends "base.html" %}
-{% block title %}Home{% endblock %}
+{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content
+%}
+<div id="link-header" style="display: flex" class="flex-column bg-1">
+    <div class="link-header-top"></div>
 
-{% block content %}
-<main class="small">
-    <h1>Hello, world!</h1>
+    <div class="link-header-middle">
+        <h1 class="no-margin">All Reports</h1>
+    </div>
+
+    <div class="link-header-bottom"></div>
+</div>
+
+<main class="small flex flex-column g-4">
+    <table class="full stripped">
+        <thead>
+            <tr>
+                <th>Actions</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Timestamp</th>
+                <th>Author</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for r in reports %}
+            <tr>
+                <td><a href="/{{ r.id }}">View</a></td>
+                <td><b>{{ r.report_type }}</b></td>
+                <td>{{ r.status }}</td>
+                <td>
+                    <span class="date-time-to-localize">{{ r.timestamp }}</span>
+                </td>
+                {% if r.author.is_empty() == false %}
+                <td>
+                    <a href="{{ guppy }}/{{ r.author }}">{{ r.author }}</a>
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="full flex justify-space-between" id="pages">
+        <a
+            class="button round"
+            href="?offset={{ offset - 50 }}"
+            disabled="{{ offset <= 0 }}"
+        >
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="lucide lucide-arrow-left"
+            >
+                <path d="m12 19-7-7 7-7" />
+                <path d="M19 12H5" />
+            </svg>
+            Back
+        </a>
+
+        <a
+            class="button round"
+            href="?offset={{ offset + 50 }}"
+            disabled="{{ reports.len() == 0 }}"
+        >
+            Next
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="lucide lucide-arrow-right"
+            >
+                <path d="M5 12h14" />
+                <path d="m12 5 7 7-7 7" />
+            </svg>
+        </a>
+    </div>
 </main>
-{% call super() %}
-{% endblock %}
+{% call super() %} {% endblock %}

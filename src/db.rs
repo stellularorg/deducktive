@@ -9,7 +9,7 @@ pub struct AppData {
 }
 
 // ...
-#[derive(Clone, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum ReportType {
     Harassment,
     Abuse,
@@ -24,7 +24,13 @@ impl Default for ReportType {
     }
 }
 
-#[derive(Clone, Serialize, Deserialize, PartialEq)]
+impl std::fmt::Display for ReportType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{:?}", self)
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum ReportStatus {
     /// Report is active and needs to be handled
     Active,
@@ -40,8 +46,16 @@ impl Default for ReportStatus {
     }
 }
 
+impl std::fmt::Display for ReportStatus {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{:?}", self)
+    }
+}
+
 #[derive(Clone, Serialize, Deserialize, PartialEq)]
 pub struct Report {
+    /// The ID of the report
+    pub id: String,
     /// The type of the report
     pub report_type: ReportType,
     /// The status of the report
@@ -89,6 +103,7 @@ impl Database {
 
         let _ = sqlquery(
             "CREATE TABLE IF NOT EXISTS \"de_reports\" (
+                id VARCHAR(1000000),
                 report_type VARCHAR(1000000),
                 report_status VARCHAR(1000000),
                 author VARCHAR(1000000),
@@ -128,7 +143,7 @@ impl Database {
     // example
 
     // GET
-    /// Get all [`Active`](ReportStatus) [`Report`]s (limited)
+    /// Get all [`Report`]s (limited)
     ///
     /// # Arguments:
     /// * `offset` - optional value representing the SQL fetch offset
@@ -156,9 +171,9 @@ impl Database {
 
         // ...
         let query: &str = if (self.base.db._type == "sqlite") | (self.base.db._type == "mysql") {
-            "SELECT * FROM \"de_reports\" WHERE \"report_status\" = 'Active' ORDER BY \"timestamp\" DESC LIMIT 50 OFFSET ?"
+            "SELECT * FROM \"de_reports\" ORDER BY \"timestamp\" DESC LIMIT 50 OFFSET ?"
         } else {
-            "SELECT * FROM \"de_reports\" WHERE \"report_status\" = 'Active' ORDER BY \"timestamp\" DESC LIMIT 50 OFFSET $1"
+            "SELECT * FROM \"de_reports\" ORDER BY \"timestamp\" DESC LIMIT 50 OFFSET $1"
         };
 
         let c = &self.base.db.client;
@@ -178,6 +193,7 @@ impl Database {
         for row in res.unwrap() {
             let row = self.base.textify_row(row).data;
             full_res.push(Report {
+                id: row.get("id").unwrap().to_string(),
                 report_type: serde_json::from_str(row.get("report_type").unwrap()).unwrap(),
                 status: serde_json::from_str(row.get("report_status").unwrap()).unwrap(),
                 author: row.get("author").unwrap().to_string(),
@@ -248,6 +264,7 @@ impl Database {
 
         // store in cache
         let report = Report {
+            id: row.get("id").unwrap().to_string(),
             report_type: serde_json::from_str(row.get("report_type").unwrap()).unwrap(),
             status: serde_json::from_str(row.get("report_status").unwrap()).unwrap(),
             author: row.get("author").unwrap().to_string(),
@@ -287,15 +304,28 @@ impl Database {
             };
         }
 
+        // check address
+        if (props.address.len() < 1)
+            | (props.address.len() > 2_000)
+            | (!props.address.starts_with("http"))
+        {
+            return DefaultReturn {
+                success: false,
+                message: String::from("Address is invalid"),
+                payload: Option::None,
+            };
+        }
+
         // create report
         let query: &str = if (self.base.db._type == "sqlite") | (self.base.db._type == "mysql") {
-            "INSERT INTO \"de_reports\" VALUES (?, ?, ?, ?, ?, ?)"
+            "INSERT INTO \"de_reports\" VALUES (?, ?, ?, ?, ?, ?, ?)"
         } else {
-            "INSERT INTO \"de_reports\" VALUES ($1, $2, $3, $4, $5, $6)"
+            "INSERT INTO \"de_reports\" VALUES ($1, $2, $3, $4, $5, $6, $7)"
         };
 
         let c = &self.base.db.client;
         let res = sqlquery(query)
+            .bind::<&String>(&dorsal::utility::random_id())
             .bind::<&String>(&serde_json::to_string(&props.report_type).unwrap())
             .bind::<&String>(&serde_json::to_string(&props.status).unwrap())
             .bind::<&String>(&props.author)
@@ -409,6 +439,12 @@ impl Database {
                     format!("report:{}", id),
                     serde_json::to_string::<Report>(&report).unwrap(),
                 )
+                .await;
+
+            // TODO: maybe only clear the correct offset
+            self.base
+                .cachedb
+                .remove_starting_with("reports:offset*".to_string())
                 .await;
         }
 
