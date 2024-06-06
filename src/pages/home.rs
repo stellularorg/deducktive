@@ -113,7 +113,7 @@ pub async fn auth_picker(token_user_is_some: bool, set_cookie: String) -> HttpRe
         );
 }
 
-#[get("/{id:.*}")]
+#[get("/report/{id:.*}")]
 pub async fn manage_report_request(
     req: HttpRequest,
     data: web::Data<crate::db::AppData>,
