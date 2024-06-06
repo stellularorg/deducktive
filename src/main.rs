@@ -97,6 +97,7 @@ async fn main() -> std::io::Result<()> {
             // POST api
             .service(crate::api::auth::callback_request)
             .service(crate::api::reports::create_request)
+            .service(crate::api::reports::edit_status_request)
             // GET api
             .service(crate::api::auth::logout)
             // GET root
