@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <meta
+            http-equiv="content-security-policy"
+            content="default-src 'self' blob:; img-src * data:; media-src *; font-src *; style-src 'unsafe-inline' 'self' blob: *; script-src 'self' 'unsafe-inline' blob: *; object-src 'self' blob: *; upgrade-insecure-requests; connect-src *; frame-src 'self' blob: data: *"
+        />
+
+        <title>Create Report - Deducktive</title>
+
+        <meta name="theme-color" content="#c262ef" />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="Description" />
+
+        <link rel="stylesheet" href="/static/style.css" />
+        <script type="module" src="/static/js/Footer.js"></script>
+
+        <style>
+            html,
+            body {
+                background: transparent !important;
+                padding: 0 var(--u-04) !important;
+            }
+        </style>
+    </head>
+
+    <body>
+        <!-- warning stuff -->
+        <div id="warning" class="flex flex-column g-4">
+            <h2 class="no-margin">Notice</h2>
+            <p>
+                Reports filed through this form are manually handled and there's
+                no guarantee on the time this individual report will be handled.
+                You
+                <b>will not</b>
+                receive follow-up communications about your report! Spam reports
+                through this form could lead to action being taken against your
+                account.
+            </p>
+            <p>Press the button below to acknowledge.</p>
+            <button class="round theme:primary" id="continue">Continue</button>
+        </div>
+
+        <!-- report stuff -->
+        <form
+            class="full flex-column g-4"
+            id="report_page"
+            style="display: none"
+        >
+            <label for="report_type"><b>Report Type</b></label>
+
+            <select
+                required
+                name="report_type"
+                id="report_type"
+                class="full round"
+            >
+                <option value="Harassment">Harassment</option>
+                <option value="Abuse">Abuse</option>
+                <option value="Illegal">Illegal</option>
+                <option value="Harmful">Harmful</option>
+                <option value="Other">Other</option>
+            </select>
+
+            <label for="content"><b>Content</b></label>
+
+            <textarea
+                maxlength="500"
+                required
+                name="content"
+                id="content"
+                class="round"
+                placeholder="Report Content"
+            ></textarea>
+
+            <button class="round theme:primary">Report Page</button>
+        </form>
+
+        <script type="module">
+            import "/static/js/CreateReport.js";
+        </script>
+    </body>
+</html>

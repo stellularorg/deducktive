@@ -39,6 +39,17 @@ struct ViewReportTemplate {
     body_embed: String,
 }
 
+#[derive(Template)]
+#[template(path = "embed.html")]
+struct EmbedTemplate {}
+
+#[get("/api/v1/reports/embed")]
+pub async fn embed_request() -> impl Responder {
+    return HttpResponse::Ok()
+        .append_header(("Content-Type", "text/html"))
+        .body(EmbedTemplate {}.render().unwrap());
+}
+
 #[get("/")]
 pub async fn home_request(
     req: HttpRequest,

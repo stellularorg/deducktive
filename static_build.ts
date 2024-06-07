@@ -11,6 +11,7 @@ const output = await build({
     entrypoints: [
         "./static/ts/pages/Footer.ts",
         "./static/ts/pages/ReportView.ts",
+        "./static/ts/pages/CreateReport.ts",
     ],
     minify: {
         identifiers: true,

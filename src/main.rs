@@ -103,6 +103,7 @@ async fn main() -> std::io::Result<()> {
             // GET api
             .service(crate::api::auth::logout)
             // GET root
+            .service(crate::pages::home::embed_request)
             .service(crate::pages::home::manage_report_request)
             .service(crate::pages::home::home_request)
     })
