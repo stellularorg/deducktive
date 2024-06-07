@@ -79,6 +79,23 @@
             <button class="round theme:primary">Report Page</button>
         </form>
 
+        <script>
+            window.addEventListener("message", (event) => {
+                console.info(event.data);
+                if (typeof event.data != "object") {
+                    return;
+                }
+
+                const data = event.data;
+
+                if (data.assign === "REAL_HREF") {
+                    window.REAL_HREF = data.value;
+                } else if (data.assign === "REPORT_AS_USER") {
+                    window.REPORT_AS_USER = data.value;
+                }
+            });
+        </script>
+
         <script type="module">
             import "/static/js/CreateReport.js";
         </script>

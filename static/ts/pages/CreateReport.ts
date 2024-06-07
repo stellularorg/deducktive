@@ -4,24 +4,10 @@ const report_form = document.getElementById(
 
 const warning = document.getElementById("warning") as HTMLDivElement | null;
 
-if (window.top && report_form && warning) {
+if (report_form && warning) {
     document.getElementById("continue")!.addEventListener("click", () => {
         report_form.style.display = "flex";
         warning.remove();
-    });
-
-    window.addEventListener("message", (event) => {
-        if (typeof event.data != "object") {
-            return;
-        }
-
-        const data = event.data;
-
-        if (data.assign === "REAL_HREF") {
-            (window as any).REAL_HREF = data.value;
-        } else if (data.assign === "REPORT_AS_USER") {
-            (window as any).REPORT_AS_USER = data.value;
-        }
     });
 
     report_form.addEventListener("submit", async (event) => {
