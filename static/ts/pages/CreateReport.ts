@@ -2,16 +2,28 @@ const report_form = document.getElementById(
     "report_page",
 ) as HTMLFormElement | null;
 
-const warning = document.getElementById(
-    "warning",
-) as HTMLDivElement | null;
+const warning = document.getElementById("warning") as HTMLDivElement | null;
 
 if (window.top && report_form && warning) {
     document.getElementById("continue")!.addEventListener("click", () => {
         report_form.style.display = "flex";
         warning.remove();
     });
-    
+
+    window.addEventListener("message", (event) => {
+        if (typeof event.data != "object") {
+            return;
+        }
+
+        const data = event.data;
+
+        if (data.assign === "REAL_HREF") {
+            (window as any).REAL_HREF = data.value;
+        } else if (data.assign === "REPORT_AS_USER") {
+            (window as any).REPORT_AS_USER = data.value;
+        }
+    });
+
     report_form.addEventListener("submit", async (event) => {
         event.preventDefault();
 
@@ -26,7 +38,7 @@ if (window.top && report_form && warning) {
                         report_form.report_type.selectedIndex
                     ].value,
                 content: report_form.content.value,
-                address: window.location.href,
+                address: (window as any).REAL_HREF,
                 // get current user username
                 as_user: (window as any).REPORT_AS_USER,
             }),
